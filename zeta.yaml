@@ -1,0 +1,28 @@
+Channels:
+  - FIRMWARE_VERSION:
+      size: 2
+      read_only: true
+      initial_value: [5, 0]
+  - SENSOR_DATA:
+      size: 8
+  - ACT:
+      size: 1
+        
+Services:
+  - SENSOR:
+      priority: 1
+      stack_size: 512
+      pub_channels:
+          - !ref SENSOR_DATA
+  - CORE:
+      priority: 4
+      stack_size: 512
+      pub_channels:
+          - !ref ACT
+      sub_channels:
+          - !ref SENSOR_DATA
+  - ACTUATOR:
+      priority: 3
+      stack_size: 512
+      sub_channels:
+          - !ref ACT

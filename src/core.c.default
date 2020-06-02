@@ -1,0 +1,34 @@
+#include <logging/log.h>
+#include <zephyr.h>
+#include <zeta.h>
+
+LOG_MODULE_DECLARE(zeta, CONFIG_ZETA_LOG_LEVEL);
+
+K_SEM_DEFINE(CORE_callback_sem, 0, 1);
+
+
+/**
+ * @brief This is the function used by Zeta to tell the CORE that one(s) of the
+ * channels which it is subscribed has changed. This callback will be called passing the
+ * channel's id in it.
+ *
+ * @param id
+ */
+void CORE_service_callback(zt_channel_e id)
+{
+    k_sem_give(&CORE_callback_sem);
+}
+
+/**
+ * @brief This is the task loop responsible to run the CORE thread
+ * functionality.
+ */
+void CORE_task()
+{
+    LOG_DBG("CORE Service has started...[OK]");
+    while (1) {
+        k_sem_take(&CORE_callback_sem, K_FOREVER);
+    }
+}
+
+ZT_SERVICE_INIT(CORE, CORE_task, CORE_service_callback);
